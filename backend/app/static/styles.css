@@ -1,0 +1,2 @@
+body { min-height: 100vh; }
+.card img { object-fit: cover; height: 180px; }

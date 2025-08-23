@@ -1,0 +1,34 @@
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "3310:3306"
+
+  backend:
+    build: ./backend
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8092:8000"               # dışarıdan 8092
+    volumes:
+      - ./backend/app:/app/app
+      - ./uploads:/app/uploads
+    # --factory YOK; create_app() ifadesini doğrudan veriyoruz
+    command: ["gunicorn", "-w", "1", "-b", "0.0.0.0:8000", "app.main:create_app()"]
+
+volumes:
+  db_data:

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catalog</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- TEK NAVBAR (Giriş/Kayıt yok) -->
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="#">Catalog</a>
+      <form id="searchForm" class="d-flex mx-auto" role="search">
+        <input class="form-control" id="searchInput" placeholder="Ürün ara...">
+      </form>
+      <div class="d-flex align-items-center gap-3">
+        <span id="welcomeUser" class="text-muted small d-none"></span>
+        <button id="logoutBtn" class="btn btn-outline-secondary">Çıkış</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="d-flex gap-2 align-items-center mb-3">
+      <select id="categoryFilter" class="form-select w-auto">
+        <option value="">Tüm Kategoriler</option>
+      </select>
+      <select id="stockFilter" class="form-select w-auto">
+        <option value="">Stok (Hepsi)</option>
+        <option value="true">Stokta Var</option>
+        <option value="false">Stokta Yok</option>
+      </select>
+      <button id="adminAddBtn" class="btn btn-success ms-auto d-none" data-bs-toggle="modal" data-bs-target="#productModal">Ürün Ekle</button>
+    </div>
+
+    <div id="productsGrid" class="row g-3"></div>
+  </main>
+
+  <!-- SADECE ÜRÜN MODALI (login/register modalları YOK) -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content p-3">
+        <h5>Ürün</h5>
+        <input id="pName" class="form-control mb-2" placeholder="Ad" required>
+        <textarea id="pDesc" class="form-control mb-2" placeholder="Açıklama (opsiyonel)"></textarea>
+        <input id="pPrice" type="number" step="0.01" class="form-control mb-2" placeholder="Fiyat" required>
+        <input id="pImageFile" type="file" accept="image/*" class="form-control mb-2" required>
+        <select id="pCategory" class="form-select mb-2"></select>
+        <div class="form-check mb-3">
+          <input id="pStock" class="form-check-input" type="checkbox" checked>
+          <label class="form-check-label" for="pStock">Stokta</label>
+        </div>
+        <button id="productSave" class="btn btn-success w-100">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

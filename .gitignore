@@ -1,0 +1,51 @@
+
+```gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
+
+# Virtual env
+.venv/
+venv/
+
+# Flask / App
+*.log
+logs/
+instance/
+*.sqlite3
+*.db
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Uploads & yedekler
+uploads/
+backup.sql
+
+# Node (ileride eklenirse)
+node_modules/
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# IDE / OS
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+# local volumes (repo dışında)
+product-catalog_db_data/
