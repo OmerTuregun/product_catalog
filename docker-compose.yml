@@ -27,8 +27,22 @@ services:
     volumes:
       - ./backend/app:/app/app
       - ./uploads:/app/uploads
-    # --factory YOK; create_app() ifadesini doğrudan veriyoruz
-    command: ["gunicorn", "-w", "1", "-b", "0.0.0.0:8000", "app.main:create_app()"]
+    command:
+      - gunicorn
+      - --preload            # app factory 1 kez master’da çalışır (hızlı/kararlı)
+      - -w
+      - "2"                  # 2 worker (CPU’ya göre 2–3 iyidir)
+      - --threads
+      - "4"                  # her worker 4 thread (I/O beklemelerinde akıcı)
+      - -k
+      - gthread              # thread’li worker
+      - --timeout
+      - "60"
+      - --keep-alive
+      - "2"
+      - -b
+      - 0.0.0.0:8000
+      - app.main:create_app()
 
 volumes:
   db_data:

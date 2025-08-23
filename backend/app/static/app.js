@@ -61,20 +61,28 @@ async function loadProducts() {
   if (q) params.set('query', q);
   if (cat) params.set('category_id', cat);
   if (stock) params.set('in_stock', stock);
+
   const items = await api('/api/products?' + params.toString());
   const grid = document.getElementById('productsGrid');
   grid.innerHTML = '';
-  items.forEach(p=>{
+
+  items.forEach(p => {
+    const imgSrc = p.image_url || 'https://via.placeholder.com/800x600?text=No+Image';
     grid.insertAdjacentHTML('beforeend', `
       <div class="col-12 col-sm-6 col-lg-4">
-        <div class="card h-100">
-          <img src="${p.image_url || 'https://via.placeholder.com/600x400'}" class="card-img-top" onerror="this.src='https://via.placeholder.com/600x400'">
+        <div class="card h-100 shadow-sm">
+          <div class="product-media">
+            <img src="${imgSrc}" alt="${p.name || 'Ürün görseli'}" loading="lazy"
+                onerror="this.src='https://via.placeholder.com/800x600?text=No+Image'">
+          </div>
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">${p.name}</h5>
             <p class="card-text text-muted small">${p.description || ''}</p>
             <div class="mt-auto d-flex justify-content-between align-items-center">
               <span class="fw-semibold">${p.price} ₺</span>
-              <span class="badge ${p.in_stock?'bg-success':'bg-secondary'}">${p.in_stock?'Stokta':'Yok'}</span>
+              <span class="badge ${p.in_stock ? 'bg-success' : 'bg-secondary'}">
+                ${p.in_stock ? 'Stokta' : 'Yok'}
+              </span>
             </div>
           </div>
         </div>
