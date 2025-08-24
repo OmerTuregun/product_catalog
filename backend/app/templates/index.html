@@ -5,8 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Catalog</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
+
+    :root { --card-radius: 16px; }
+
+    /* Kartın genel görünümü */
+    .product-card{
+      border: none;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+      background: #fff;
+    }
+    .product-card:hover{
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.10);
+    }
+
+    /* Üst görsel alanı (zaten kırpmasız sığdırıyoruz) */
+    .product-card .product-media{
+      position: relative;
+      width: 100%;
+      padding-top: 75%; /* 4:3 */
+      background: linear-gradient(180deg,#fafafa,#f2f3f5);
+      border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+    .product-card .product-media img{
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: contain; object-position: center;
+      display: block;
+    }
+
+    /* Başlık 2 satırda sabitlensin (taşma olmasın) */
+    .product-card .card-title{
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: .25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;      /* 2 satırda kes */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.8em;          /* yüksekliği sabitler */
+    }
+
+    /* Fiyat */
+    .product-card .price{
+      font-weight: 700;
+      font-size: 1.06rem;
+      letter-spacing: .2px;
+    }
+
+
+    /* Yumuşak birincil buton */
+    .btn-primary-soft{
+      background: rgba(var(--bs-primary-rgb), .10);
+      color: var(--bs-primary);
+      border: 1px solid rgba(var(--bs-primary-rgb), .15);
+    }
+    .btn-primary-soft:hover{
+      background: rgba(var(--bs-primary-rgb), .15);
+      color: var(--bs-primary);
+      border-color: rgba(var(--bs-primary-rgb), .25);
+    }
+
+    /* Stok rozeti */
+    .status-pill{
+      padding: .4rem .55rem;
+      font-weight: 600;
+      border-radius: 999px;
+    }
     /* Kart görsel alanı: 4:3 kırpmasız */
     .product-media{
       position: relative;
@@ -48,13 +121,24 @@
     #detailModal .carousel-control-next-icon{
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ff5722' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 1.646a.5.5 0 0 0 0 .708L10.293 8l-5.647 5.646a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708l-6-6a.5.5 0 0 0-.708 0z'/%3E%3C/svg%3E") !important;
     }
+    .navbar .brand-logo{
+      height: 32px;     /* logonun yüksekliği */
+      width: auto;      /* oranı koru */
+      object-fit: contain;
+      display: block;
+    }
+
   </style>
 </head>
 <body class="bg-light">
 
   <nav class="navbar navbar-expand-lg bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-semibold" href="#">Catalog</a>
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='img/hira-hanimlar-logo.jpeg') }}"
+            alt="Hira Hanımlar" class="brand-logo">
+        <span class="fw-semibold">Hira Hanımlar Hayır Ürünleri Kataloğu</span>
+      </a>
       <form id="searchForm" class="d-flex mx-auto" role="search">
         <input class="form-control" id="searchInput" placeholder="Ürün ara...">
       </form>
@@ -83,16 +167,17 @@
     <div id="productsGrid" class="row g-3"></div>
   </main>
 
-  <!-- ÜRÜN EKLE MODAL -->
+  <!-- ÜRÜN MODAL -->
   <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content p-3">
-        <h5>Ürün</h5>
+        <h5 id="productModalTitle">Yeni Ürün</h5>   <!-- ← eklendi -->
         <input id="pName" class="form-control mb-2" placeholder="Ad" required>
         <textarea id="pDesc" class="form-control mb-2" placeholder="Açıklama (opsiyonel)"></textarea>
         <input id="pPrice" type="number" step="0.01" class="form-control mb-2" placeholder="Fiyat" required>
-        <input id="pImageFile" type="file" accept="image/*" class="form-control mb-2" multiple required>
-        <select id="pCategory" class="form-select mb-2"></select>
+        <!-- çoklu dosya: -->
+        <input id="pImageFiles" type="file" accept="image/*" class="form-control mb-2" multiple>
+        <select id="pCategory" class="form-select mb-2" required></select>
         <div class="form-check mb-3">
           <input id="pStock" class="form-check-input" type="checkbox" checked>
           <label class="form-check-label" for="pStock">Stokta</label>
