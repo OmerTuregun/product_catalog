@@ -1,3 +1,4 @@
+# backend/app/main.py
 import os
 from flask import Flask, render_template, send_from_directory
 from .db import db, init_db
@@ -5,6 +6,19 @@ from .auth import auth_bp, login_manager
 from .products import prod_bp
 from .seed import initial_seed
 from flask_login import login_required
+
+# >>> EK: migrate helper
+from .models import Product, ProductImage
+
+def migrate_single_to_multi():
+    """image_path dolu olup images ilişkisi boş olan ürünlere bir adet ProductImage ekler."""
+    changed = 0
+    for p in Product.query.filter(Product.image_path.isnot(None)).all():
+        if not p.images:
+            db.session.add(ProductImage(product_id=p.id, file_path=p.image_path))
+            changed += 1
+    if changed:
+        db.session.commit()
 
 def create_app():
     app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -18,7 +32,7 @@ def create_app():
     # Uploads
     app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER", "/app/uploads")
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-    app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB sınır (isteğe bağlı)
+    app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
 
     init_db(app)
     login_manager.init_app(app)
@@ -36,6 +50,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        migrate_single_to_multi()   # <<< BURASI YENİ
         initial_seed()
 
     return app
